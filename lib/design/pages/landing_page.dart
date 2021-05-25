@@ -22,7 +22,7 @@ class ArticleWidget extends StatelessWidget {
 
 
 class LandingPage extends StatefulWidget {
-
+  const LandingPage({Key? key}) : super(key: key);
 
 
   @override
@@ -31,56 +31,85 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage> {
 
-  List<Widget> toDoWidgets = [];
+  List<Widget> toDoWidgets = [
+    Container(
+      color: Colors.blue,
+      width: 100,
+      height: 100,
+      child: Text("1"),
+      key: Key("1"),
+    ),
+    Container(
+      color: Colors.blue,
+      width: 100,
+      height: 100,
+      child: Text("2"),
+      key: Key("2"),
+    ),
+    Container(
+      color: Colors.blue,
+      width: 100,
+      height: 100,
+      child: Text("3"),
+      key: Key("3"),
+    ),
+    Container(
+      color: Colors.blue,
+      width: 100,
+      height: 100,
+      child: Text("4"),
+      key: Key("4"),
+    ),
+  ];
 
-  final dbHelper = DatabaseHelper.instance;
+  // final dbHelper = DatabaseHelper.instance;
 
-  void refreshWidgets()async{
-    //this is the function that creates the birthday widgets from the database
-    dynamic toDos = [];
-    toDoWidgets = [
-      SizedBox(
-        height: 30
-      ),
-    ];
-    final allRows = await dbHelper.queryAllRows();
-    print('query all rows:');
-    allRows.forEach((row) => print(row));
-
-
-    allRows.forEach((row) {
-      print("Row ${row["text"]}");
-      toDos.add(ToDo(text: row["text"], complete: row['complete'], id: row["id"]),);
-    });
-
-    for(ToDo x in toDos){
-      print("x.text ${x.text}");
-      toDoWidgets.add(
-          ToDoWidget(
-            refresh: (){
-              refreshWidgets();
-            },
-            id: x.id,
-            text: x.text,
-            complete: x.complete == 'false'? false : true,
-            dbHelper: dbHelper,
-            edit: (int id){
-              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context)=> UpdatePage(id: id, text: x.text, complete: x.complete,)));
-            },
-          ));
-    }
-    toDoWidgets.add(
-      SizedBox(height: 80,)
-    );
-    setState(() {
-
-    });
-  }
+  // void refreshWidgets()async{
+  //   //this is the function that creates the birthday widgets from the database
+  //   dynamic toDos = [];
+  //   toDoWidgets = [
+  //     SizedBox(
+  //       height: 30
+  //     ),
+  //   ];
+  //   final allRows = await dbHelper.queryAllRows();
+  //   print('query all rows:');
+  //   allRows.forEach((row) => print(row));
+  //
+  //
+  //   allRows.forEach((row) {
+  //     print("Row ${row["text"]}");
+  //     toDos.add(ToDo(text: row["text"], complete: row['complete'], id: row["id"]),);
+  //   });
+  //
+  //   for(ToDo x in toDos){
+  //     print("x.text ${x.text}");
+  //     toDoWidgets.add(
+  //         ToDoWidget(
+  //           refresh: (){
+  //             refreshWidgets();
+  //           },
+  //           id: x.id,
+  //           text: x.text,
+  //           complete: x.complete == 'false'? false : true,
+  //           dbHelper: dbHelper,
+  //           edit: (int id){
+  //             Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context)=> UpdatePage(id: id, text: x.text, complete: x.complete,)));
+  //           },
+  //         ));
+  //   }
+  //   toDoWidgets.add(
+  //     SizedBox(height: 80,)
+  //   );
+  //   setState(() {
+  //
+  //   });
+  // }
 
 
   @override
   void initState() {
-    refreshWidgets();
+    // refreshWidgets();
     super.initState();
   }
 
@@ -89,9 +118,19 @@ class _LandingPageState extends State<LandingPage> {
 
     return Scaffold(
 
-      body: SingleChildScrollView(
-        child: Column(
+      body: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height/2,
+        child: ReorderableListView(
           children: toDoWidgets,
+          onReorder: (int oldIndex, int newIndex) {
+        setState(() {
+          if (oldIndex < newIndex) {
+            newIndex -= 1;
+          }
+          final Widget movedToDo = toDoWidgets.removeAt(oldIndex);
+          toDoWidgets.insert(newIndex, movedToDo);
+        });},
         ),
       ),
       floatingActionButton: Container(

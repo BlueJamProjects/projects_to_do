@@ -18,6 +18,7 @@ class ToDoWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      key: Key("$id"),
       onVerticalDragStart: (start){},
       child: Padding(
         padding: const EdgeInsets.all(8.0),

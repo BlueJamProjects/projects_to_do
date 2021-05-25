@@ -17,7 +17,24 @@ class MyApp extends StatelessWidget {
       theme: ThemeData().copyWith(
         unselectedWidgetColor: Colors.white,
       ),
-      home: PageStorageTest(),
+      home: LandingPage(),
+    );
+  }
+}
+
+
+class NewPage extends StatefulWidget {
+  const NewPage({Key? key}) : super(key: key);
+
+  @override
+  _NewPageState createState() => _NewPageState();
+}
+
+class _NewPageState extends State<NewPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Text("1234"),
     );
   }
 }
