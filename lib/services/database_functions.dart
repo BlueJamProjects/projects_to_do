@@ -13,7 +13,7 @@ void databaseInsert({required String text, var dbHelper, required  String comple
 }
 
 
-void databaseUpdate({required int id, required String text, var dbHelper,required String complete}) async {
+void databaseUpdate({required int id, required String text,required var dbHelper,required String complete}) async {
   // row to update
   Map<String, dynamic> row = {
     DatabaseHelper.columnId   : id,
