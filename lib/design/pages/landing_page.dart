@@ -75,17 +75,26 @@ class _LandingPageState extends State<LandingPage> {
 
 
   void reorder(int oldIndex, int newIndex) {
-
     for (ToDo x in toDos){
       print(x.complete);
     }
 
-      if (oldIndex < toDoWidgets.length && oldIndex > 0 && newIndex > 0){
+      if (oldIndex < toDoWidgets.length - 1 && oldIndex > 0){
         if (oldIndex < newIndex) {
           newIndex -= 1;
         }
+        if(newIndex >= toDoWidgets.length - 1){
+          newIndex = toDoWidgets.length - 2;
+        }
+        if(newIndex <= 0){
+          newIndex = 1;
+        }
+
         ToDo firstToDo = toDos[oldIndex - 1];
-        ToDo secondToDo = toDos[newIndex - 1];
+
+        toDos.removeAt(oldIndex - 1);
+        toDos.insert(newIndex - 1, firstToDo);
+
 
         toDoWidgets.removeAt(oldIndex);
         toDoWidgets.insert(newIndex, Container(
@@ -104,19 +113,24 @@ class _LandingPageState extends State<LandingPage> {
           ),
         ));
 
-        toDos.remove(firstToDo);
 
 
-        int currentIndex = 0;
-        for(ToDo d in toDos){
-          if(currentIndex > newIndex - 2){
-            dbHelper.update(id: d.id + 1, text: d.text, complete: d.complete);
+
+        if (oldIndex > newIndex){
+          for(ToDo d in toDos){
+            dbHelper.delete(d.id);
           }
-          currentIndex += 1;
+          for(ToDo d in toDos){
+            dbHelper.insert(text: d.text, complete: d.complete);
+          }
+        }else if (oldIndex < newIndex){
+          for(ToDo d in toDos){
+            dbHelper.delete(d.id);
+          }
+          for(ToDo d in toDos){
+            dbHelper.insert(text: d.text, complete: d.complete);
+          }
         }
-
-        dbHelper.update(id: secondToDo.id, text: firstToDo.text, complete: firstToDo.complete);
-
         refreshWidgets();
       }
 

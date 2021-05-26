@@ -51,7 +51,7 @@ class _CreatePageState extends State<CreatePage> {
                       roundedButtonWidget(
                         text: "Submit",
                         onPressed: (){
-                          dbHelper.insert(text: textController.text, complete: "false");
+                          dbHelper.insert(text: textController.text, complete: false);
                             Navigator.of(context).pushReplacement( MaterialPageRoute(builder: (context)=> LandingPage()),)  ;
 
                         },

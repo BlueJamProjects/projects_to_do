@@ -70,10 +70,12 @@ class DatabaseHelper {
   // inserts a row in the database
   // takes the parameter text and complete as Strings and will add them to a new row with a unique id
 
-  Future<void> insert({required String text, required String complete}) async {
+  Future<void> insert({required String text, required bool? complete}) async {
+
+    String stringComplete = complete == true? "true": "false";
     Map<String, dynamic> row = {
       DatabaseHelper.columnText : text,
-      DatabaseHelper.columnComplete  : complete,
+      DatabaseHelper.columnComplete  : stringComplete,
     };
     Database db = await _instance.database;
     await db.insert(table, row);
