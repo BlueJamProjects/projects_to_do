@@ -4,7 +4,6 @@ import 'package:projects_to_do/design/pages/create_page.dart';
 import 'package:projects_to_do/design/pages/update_page.dart';
 import 'package:projects_to_do/design/widgets/to_do_widget.dart';
 import 'package:projects_to_do/models/to_do.dart';
-import 'package:projects_to_do/services/database_functions.dart';
 import 'package:projects_to_do/services/database_helper.dart';
 
 
@@ -27,8 +26,12 @@ class _LandingPageState extends State<LandingPage> {
     //this is the function that creates the birthday widgets from the database
 
     populateToDos().then((value){
+
       toDos = value;
-      toDoWidgets = [SizedBox(
+
+
+      toDoWidgets = [
+        SizedBox(
         height: 30,
         key: Key("key"),
       )];
@@ -40,15 +43,16 @@ class _LandingPageState extends State<LandingPage> {
             Container(
               key: Key("${x.id}"),
               child: ToDoWidget(
+                hasCheckbox: true,
                 refresh: (){
                   refreshWidgets();
                 },
                 id: x.id,
                 text: x.text,
-                complete: x.complete == 'false'? false : true,
+                complete: x.complete,
                 dbHelper: dbHelper,
                 edit: (int id){
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context)=> UpdatePage(id: id, text: x.text, complete: x.complete,)));
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context)=> UpdatePage(id: id, text: x.text, complete: x.complete)));
                 },
               ),
             ));
@@ -69,7 +73,7 @@ class _LandingPageState extends State<LandingPage> {
     List<ToDo> _localToDos = [];
     await dbHelper.queryAllRows().then((value){
       value.forEach((row) {
-        _localToDos.add(ToDo(text: row["text"], complete: row['complete'], id: row["id"]),);
+        _localToDos.add(ToDo(text: row["text"], complete: row['complete'] == "false"? false : true, id: row["id"]),);
       });
     });
     return _localToDos;
@@ -89,20 +93,17 @@ class _LandingPageState extends State<LandingPage> {
         ToDo firstToDo = toDos[oldIndex - 1];
         ToDo secondToDo = toDos[newIndex - 1];
 
-        Widget toDo1 = toDoWidgets[oldIndex];
-        Widget toDo2 = toDoWidgets[newIndex];
-
-        toDoWidgets[oldIndex] = toDo2;
+        toDoWidgets[oldIndex] = toDoWidgets[newIndex];
         toDoWidgets[newIndex] = Container(
           key: Key("sd${firstToDo.id}"),
-          child: ToDoWidgetOption(
+          child: ToDoWidget(
             hasCheckbox: true,
             refresh: (){
               refreshWidgets();
             },
             id: firstToDo.id,
             text: firstToDo.text,
-            complete: firstToDo.complete == 'false'? false : true,
+            complete: firstToDo.complete,
             dbHelper: dbHelper,
             edit: (int id){
               },
@@ -118,8 +119,10 @@ class _LandingPageState extends State<LandingPage> {
         print(firstToDo.text);
         print(secondToDo.text);
 
-        databaseUpdate(id: firstToDo.id, text: secondToDo.text, complete: secondToDo.complete, dbHelper: dbHelper);
-        databaseUpdate(id: secondToDo.id, text: firstToDo.text, complete: firstToDo.complete, dbHelper: dbHelper);
+        dbHelper.update(id: firstToDo.id, text: secondToDo.text, complete: secondToDo.complete);
+        // databaseUpdate(id: firstToDo.id, text: secondToDo.text, complete: secondToDo.complete, dbHelper: dbHelper);
+        dbHelper.update(id: secondToDo.id, text: firstToDo.text, complete: firstToDo.complete);
+        // databaseUpdate(id: secondToDo.id, text: firstToDo.text, complete: firstToDo.complete, dbHelper: dbHelper);
 
         refreshWidgets();
       }

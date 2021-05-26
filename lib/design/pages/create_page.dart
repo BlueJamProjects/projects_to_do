@@ -4,7 +4,6 @@ import 'package:projects_to_do/design/pages/landing_page.dart';
 import 'package:projects_to_do/design/widgets/rounded_button_widget.dart';
 import 'package:projects_to_do/design/widgets/text_info_widget.dart';
 import '../../services/database_helper.dart';
-import '../../services/database_functions.dart';
 
 class CreatePage extends StatefulWidget {
   @override
@@ -52,12 +51,7 @@ class _CreatePageState extends State<CreatePage> {
                       roundedButtonWidget(
                         text: "Submit",
                         onPressed: (){
-                            databaseInsert(
-                              text: textController.text,
-                              complete: "false",
-                              dbHelper: dbHelper,
-                            );
-                            print("added a person");
+                          dbHelper.insert(text: textController.text, complete: "false");
                             Navigator.of(context).pushReplacement( MaterialPageRoute(builder: (context)=> LandingPage()),)  ;
 
                         },

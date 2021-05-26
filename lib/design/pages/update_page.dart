@@ -4,11 +4,10 @@ import 'package:projects_to_do/design/pages/landing_page.dart';
 import 'package:projects_to_do/design/widgets/rounded_button_widget.dart';
 import 'package:projects_to_do/design/widgets/text_info_widget.dart';
 import '../../services/database_helper.dart';
-import '../../services/database_functions.dart';
 
 class UpdatePage extends StatefulWidget {
   final String text;
-  final String complete;
+  final bool? complete;
   final int id;
   UpdatePage({required this.id, required this.text, required this.complete});
   @override
@@ -18,7 +17,7 @@ class UpdatePage extends StatefulWidget {
 class _UpdatePersonPageState extends State<UpdatePage> {
   final dbHelper = DatabaseHelper.instance;
   TextEditingController textController = TextEditingController();
-  String complete = "false";
+  bool? complete = false;
 
   @override
   void initState() {
@@ -62,14 +61,11 @@ class _UpdatePersonPageState extends State<UpdatePage> {
 
                         onPressed: (){
                           print(textController.text);
-                          databaseUpdate(
-                              id: widget.id,
-                              text: textController.text,
-                              dbHelper: dbHelper,
-                            complete: complete,
-                            );
+                          dbHelper.update(id: widget.id, text: textController.text, complete: widget.complete).then((value){
                             print("changed the text");
-                            Navigator.of(context).pushReplacement( MaterialPageRoute(builder: (context)=> LandingPage()),)  ;
+                            Navigator.of(context).pushReplacement( MaterialPageRoute(builder: (context)=> LandingPage()),);
+                          });
+
                           }
                       ),
                     ],

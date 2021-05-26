@@ -4,9 +4,38 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 
 class DatabaseHelper {
+  //sets this class up as a singleton
+
   static final DatabaseHelper _instance = new DatabaseHelper._internal();
+
   DatabaseHelper._internal();
+
   static DatabaseHelper get instance => _instance;
+
+
+  //the variables that will be used to determine the attributes of the database
+
+  //name of the Database
+  static final _databaseName = "projects_to_do.db";
+
+  //version of the database
+  static final _databaseVersion = 1;
+
+  //name of the table
+  static final table = 'projects';
+
+  //name of the Id column
+  //this column contains the unique int id of a row
+  static final columnId = 'id';
+
+  //name of the Text column
+  //this column contains the String text of a given row
+  static final columnText = 'text';
+
+  //name of the Complete column
+  //this column contains a String with the value 'True' of 'False' that will be converted into a boolean when accessed elsewhere
+  static final columnComplete = 'complete';
+
 
   // gets the database using the _initDatabase function
   Future<Database> get database async {
@@ -39,11 +68,15 @@ class DatabaseHelper {
   // the methods called elsewhere in the app
 
   // inserts a row in the database
-  // takes a Map as an argument with each key being a column name and each value being that column's value
-  // returns the primary id of the newly inserted row
-  Future<int> insert(Map<String, dynamic> row) async {
+  // takes the parameter text and complete as Strings and will add them to a new row with a unique id
+
+  Future<void> insert({required String text, required String complete}) async {
+    Map<String, dynamic> row = {
+      DatabaseHelper.columnText : text,
+      DatabaseHelper.columnComplete  : complete,
+    };
     Database db = await _instance.database;
-    return await db.insert(table, row);
+    await db.insert(table, row);
   }
 
   // All of the rows are returned as a list of maps, where each map is
@@ -56,47 +89,23 @@ class DatabaseHelper {
   }
 
 
-  // updates a row in the database
-  // it takes in a Map as an argument
-  // the Map has 3 keys whose keys are the string values of 3 Database Helper variables: columnId, columnText and columnComplete (when this row variable is created direct reference to the variables should be used)
-  // to access a value in the row insert the relevant variable as an argument into the row variable
-  // columnId will be the id of the row that will be updated
-  // columnText is the new value for the columnText column of that row
-  // columnComplete is the new value for the columnComplete column of that row
-  Future<int?> update(Map<String, dynamic> row) async {
+  // updates a row in the database based on a specific id
+  // it takes 3 arguments for for the row: id, text and complete (complete is a bool? here)
+
+  Future<void> update({required int id, required String text,required bool? complete}) async {
+    String completeText = complete == true? "true": "false";
     Database db = await _instance.database;
-    int id = row[columnId];
-    return Sqflite.firstIntValue(await db.rawQuery('UPDATE $table SET $columnText = "${row[columnText]}",  $columnComplete = "${row[columnComplete]}" WHERE $columnId = $id'));
-  }
+    await db.rawQuery('UPDATE $table SET $columnText = "$text",  $columnComplete = "$completeText" WHERE $columnId = $id');
+
+    }
 
   // deletes a row
   // takes an id as an argument and deletes the row with that id
-  Future<int?> delete(int id) async {
+  Future<void> delete(int id) async {
     Database db = await _instance.database;
-    return Sqflite.firstIntValue(await db.rawQuery('DELETE FROM $table WHERE $columnId = ${id.toString()}'));
+    await db.rawQuery('DELETE FROM $table WHERE $columnId = ${id.toString()}');
   }
 
-  //the variables that will be used to determine the attributes of the database
-
-  //name of the Database
-  static final _databaseName = "projects_to_do.db";
-
-  //version of the database
-  static final _databaseVersion = 1;
-
-  //name of the table
-  static final table = 'projects';
-
-  //name of the Id column
-  //this column contains the unique int id of a row
-  static final columnId = 'id';
-
-  //name of the Text column
-  //this column contains the String text of a given row
-  static final columnText = 'text';
-
-  //name of the Complete column
-  //this column contains a String with the value 'True' of 'False' that will be converted into a boolean when accessed elsewhere
-  static final columnComplete = 'complete';
-
 }
+
+
