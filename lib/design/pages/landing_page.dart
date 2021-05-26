@@ -31,7 +31,8 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage> {
 
-  List<Widget> toDoWidgets = [
+  List<Widget> toDoWidgets = [];
+  List<Widget> toDo = [
     Container(
       color: Colors.blue,
       width: 100,
@@ -63,53 +64,58 @@ class _LandingPageState extends State<LandingPage> {
   ];
 
   // final dbHelper = DatabaseHelper.instance;
+  final dbHelper = DatabaseHelper.instance;
+  void refreshWidgets()async{
+    //this is the function that creates the birthday widgets from the database
+    dynamic toDos = [];
+    toDoWidgets = [
+      SizedBox(
+        height: 30,
+        key: Key("key"),
+      ),
+    ];
+    final allRows = await dbHelper.queryAllRows();
+    print('query all rows:');
+    allRows.forEach((row) => print(row));
 
-  // void refreshWidgets()async{
-  //   //this is the function that creates the birthday widgets from the database
-  //   dynamic toDos = [];
-  //   toDoWidgets = [
-  //     SizedBox(
-  //       height: 30
-  //     ),
-  //   ];
-  //   final allRows = await dbHelper.queryAllRows();
-  //   print('query all rows:');
-  //   allRows.forEach((row) => print(row));
-  //
-  //
-  //   allRows.forEach((row) {
-  //     print("Row ${row["text"]}");
-  //     toDos.add(ToDo(text: row["text"], complete: row['complete'], id: row["id"]),);
-  //   });
-  //
-  //   for(ToDo x in toDos){
-  //     print("x.text ${x.text}");
-  //     toDoWidgets.add(
-  //         ToDoWidget(
-  //           refresh: (){
-  //             refreshWidgets();
-  //           },
-  //           id: x.id,
-  //           text: x.text,
-  //           complete: x.complete == 'false'? false : true,
-  //           dbHelper: dbHelper,
-  //           edit: (int id){
-  //             Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context)=> UpdatePage(id: id, text: x.text, complete: x.complete,)));
-  //           },
-  //         ));
-  //   }
-  //   toDoWidgets.add(
-  //     SizedBox(height: 80,)
-  //   );
-  //   setState(() {
-  //
-  //   });
-  // }
+
+    allRows.forEach((row) {
+      print("Row ${row["text"]}");
+      toDos.add(ToDo(text: row["text"], complete: row['complete'], id: row["id"]),);
+    });
+
+    for(ToDo x in toDos){
+      print("x.text ${x.text}");
+      toDoWidgets.add(
+          Container(
+            key: Key("${x.id}"),
+            child: ToDoWidget(
+              refresh: (){
+                refreshWidgets();
+              },
+              id: x.id,
+              text: x.text,
+              complete: x.complete == 'false'? false : true,
+              dbHelper: dbHelper,
+              edit: (int id){
+                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context)=> UpdatePage(id: id, text: x.text, complete: x.complete,)));
+              },
+            ),
+          ));
+    }
+    toDoWidgets.add(
+      SizedBox(height: 80,
+      key: Key("final_widget"),)
+    );
+    setState(() {
+
+    });
+  }
 
 
   @override
   void initState() {
-    // refreshWidgets();
+     refreshWidgets();
     super.initState();
   }
 
@@ -125,11 +131,14 @@ class _LandingPageState extends State<LandingPage> {
           children: toDoWidgets,
           onReorder: (int oldIndex, int newIndex) {
         setState(() {
-          if (oldIndex < newIndex) {
-            newIndex -= 1;
+          if (oldIndex < toDoWidgets.length){
+            if (oldIndex < newIndex) {
+              newIndex -= 1;
+            }
+            final Widget movedToDo = toDoWidgets.removeAt(oldIndex);
+            toDoWidgets.insert(newIndex, movedToDo);
           }
-          final Widget movedToDo = toDoWidgets.removeAt(oldIndex);
-          toDoWidgets.insert(newIndex, movedToDo);
+
         });},
         ),
       ),
