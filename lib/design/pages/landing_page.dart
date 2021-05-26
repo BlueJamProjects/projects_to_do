@@ -1,4 +1,3 @@
-import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:projects_to_do/design/constants.dart';
 import 'package:projects_to_do/design/pages/create_page.dart';
@@ -6,18 +5,6 @@ import 'package:projects_to_do/design/pages/update_page.dart';
 import 'package:projects_to_do/design/widgets/to_do_widget.dart';
 import 'package:projects_to_do/models/to_do.dart';
 import 'package:projects_to_do/services/database_helper.dart';
-
-class ArticleWidget extends StatelessWidget {
-
-  @override
-  Widget build(BuildContext context) {
-    return ExpandablePanel(
-      header: Text("Title"),
-      collapsed: Text("Body", softWrap: true, maxLines: 2, overflow: TextOverflow.ellipsis,),
-      expanded: Text("body w", softWrap: true, ),
-    );
-  }
-}
 
 
 
@@ -32,38 +19,7 @@ class LandingPage extends StatefulWidget {
 class _LandingPageState extends State<LandingPage> {
 
   List<Widget> toDoWidgets = [];
-  List<Widget> toDo = [
-    Container(
-      color: Colors.blue,
-      width: 100,
-      height: 100,
-      child: Text("1"),
-      key: Key("1"),
-    ),
-    Container(
-      color: Colors.blue,
-      width: 100,
-      height: 100,
-      child: Text("2"),
-      key: Key("2"),
-    ),
-    Container(
-      color: Colors.blue,
-      width: 100,
-      height: 100,
-      child: Text("3"),
-      key: Key("3"),
-    ),
-    Container(
-      color: Colors.blue,
-      width: 100,
-      height: 100,
-      child: Text("4"),
-      key: Key("4"),
-    ),
-  ];
 
-  // final dbHelper = DatabaseHelper.instance;
   final dbHelper = DatabaseHelper.instance;
   void refreshWidgets()async{
     //this is the function that creates the birthday widgets from the database
@@ -75,17 +31,13 @@ class _LandingPageState extends State<LandingPage> {
       ),
     ];
     final allRows = await dbHelper.queryAllRows();
-    print('query all rows:');
-    allRows.forEach((row) => print(row));
 
 
     allRows.forEach((row) {
-      print("Row ${row["text"]}");
       toDos.add(ToDo(text: row["text"], complete: row['complete'], id: row["id"]),);
     });
 
     for(ToDo x in toDos){
-      print("x.text ${x.text}");
       toDoWidgets.add(
           Container(
             key: Key("${x.id}"),
@@ -123,24 +75,19 @@ class _LandingPageState extends State<LandingPage> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height/2,
-        child: ReorderableListView(
-          children: toDoWidgets,
-          onReorder: (int oldIndex, int newIndex) {
-        setState(() {
-          if (oldIndex < toDoWidgets.length){
-            if (oldIndex < newIndex) {
-              newIndex -= 1;
-            }
-            final Widget movedToDo = toDoWidgets.removeAt(oldIndex);
-            toDoWidgets.insert(newIndex, movedToDo);
+      body: ReorderableListView(
+        children: toDoWidgets,
+        onReorder: (int oldIndex, int newIndex) {
+      setState(() {
+        if (oldIndex < toDoWidgets.length){
+          if (oldIndex < newIndex) {
+            newIndex -= 1;
           }
+          final Widget movedToDo = toDoWidgets.removeAt(oldIndex);
+          toDoWidgets.insert(newIndex, movedToDo);
+        }
 
-        });},
-        ),
+      });},
       ),
       floatingActionButton: Container(
         decoration: BoxDecoration(
