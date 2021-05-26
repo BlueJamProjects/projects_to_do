@@ -19,7 +19,7 @@ class LandingPage extends StatefulWidget {
 class _LandingPageState extends State<LandingPage> {
 
   List<Widget> toDoWidgets = [];
-  dynamic toDos = [];
+  List<ToDo> toDos = [];
 
   final dbHelper = DatabaseHelper.instance;
   void refreshWidgets()async{
@@ -93,8 +93,8 @@ class _LandingPageState extends State<LandingPage> {
         ToDo firstToDo = toDos[oldIndex - 1];
         ToDo secondToDo = toDos[newIndex - 1];
 
-        toDoWidgets[oldIndex] = toDoWidgets[newIndex];
-        toDoWidgets[newIndex] = Container(
+        toDoWidgets.removeAt(oldIndex);
+        toDoWidgets.insert(newIndex, Container(
           key: Key("sd${firstToDo.id}"),
           child: ToDoWidget(
             hasCheckbox: true,
@@ -106,23 +106,22 @@ class _LandingPageState extends State<LandingPage> {
             complete: firstToDo.complete,
             dbHelper: dbHelper,
             edit: (int id){
-              },
+            },
           ),
-        );
+        ));
+
+        toDos.remove(firstToDo);
 
 
+        int currentIndex = 0;
+        for(ToDo d in toDos){
+          if(currentIndex > newIndex - 2){
+            dbHelper.update(id: d.id + 1, text: d.text, complete: d.complete);
+          }
+          currentIndex += 1;
+        }
 
-        toDos[oldIndex - 1] = secondToDo;
-        toDos[newIndex - 1] = firstToDo;
-
-
-        print(firstToDo.text);
-        print(secondToDo.text);
-
-        dbHelper.update(id: firstToDo.id, text: secondToDo.text, complete: secondToDo.complete);
-        // databaseUpdate(id: firstToDo.id, text: secondToDo.text, complete: secondToDo.complete, dbHelper: dbHelper);
         dbHelper.update(id: secondToDo.id, text: firstToDo.text, complete: firstToDo.complete);
-        // databaseUpdate(id: secondToDo.id, text: firstToDo.text, complete: firstToDo.complete, dbHelper: dbHelper);
 
         refreshWidgets();
       }
