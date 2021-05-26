@@ -9,9 +9,6 @@ import 'package:projects_to_do/services/database_helper.dart';
 
 
 class LandingPage extends StatefulWidget {
-  const LandingPage({Key? key}) : super(key: key);
-
-
   @override
   _LandingPageState createState() => _LandingPageState();
 }
@@ -22,21 +19,18 @@ class _LandingPageState extends State<LandingPage> {
   List<ToDo> toDos = [];
 
   final dbHelper = DatabaseHelper.instance;
+
   void refreshWidgets()async{
-    //this is the function that creates the birthday widgets from the database
 
     populateToDos().then((value){
 
       toDos = value;
-
 
       toDoWidgets = [
         SizedBox(
         height: 30,
         key: Key("key"),
       )];
-
-
 
       for(ToDo x in toDos){
         toDoWidgets.add(

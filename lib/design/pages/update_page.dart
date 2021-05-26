@@ -3,7 +3,7 @@ import 'package:projects_to_do/design/constants.dart';
 import 'package:projects_to_do/design/pages/landing_page.dart';
 import 'package:projects_to_do/design/widgets/rounded_button_widget.dart';
 import 'package:projects_to_do/design/widgets/text_info_widget.dart';
-import '../../services/database_helper.dart';
+import 'package:projects_to_do/services/database_helper.dart';
 
 class UpdatePage extends StatefulWidget {
   final String text;
